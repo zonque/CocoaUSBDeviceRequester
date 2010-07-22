@@ -1,9 +1,24 @@
-//
-//  Controller.m
-//  DFUTool
-//
-//  Copyright 2010 caiaq. All rights reserved.
-//
+/***
+ This file is part of CocoaUSBDeviceRequester
+ 
+ Copyright 2010 Daniel Mack <daniel@caiaq.de>
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with PulseAudio; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ USA.
+ ***/
+
 
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IODataQueueShared.h>
@@ -229,25 +244,17 @@ objectValueForTableColumn:(NSTableColumn *)col
 	return [deviceArray count];
 }
 
-- (void) tableView: (NSTableView *) aTableView
-   willDisplayCell: (id) aCell
-    forTableColumn: (NSTableColumn *) aTableColumn
-	       row: (NSInteger) rowIndex
-{
-	//NSDictionary *dict = [deviceArray objectAtIndex: rowIndex];
-}
-
 - (void) setDeviceEnabled: (BOOL) en
 {
 	[setButton setEnabled: en];
 	[getButton setEnabled: en];
 	[memData setEditable: en];
+	[requestType setEnabled: en];
+	[requestRecipient setEnabled: en];
 	[bRequest setEditable: en];
 	[wIndex setEditable: en];
 	[wValue setEditable: en];
 	[dataSize setEnabled: en];
-	[requestType setEnabled: en];
-	[requestRecipient setEnabled: en];
 	
 	if (!en) {
 		[deviceVID setStringValue: @"-"];
@@ -339,7 +346,6 @@ objectValueForTableColumn:(NSTableColumn *)col
 	req.wLength = count;
 	
 	kr = (*dev)->DeviceRequest(dev, &req);
-	printf("kr = %08x\n", kr);
 
 	if (kr == 0) {
 		memset(tmpstr, 0, sizeof(tmpstr));
