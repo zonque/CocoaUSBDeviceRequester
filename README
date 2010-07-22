@@ -1,0 +1,4 @@
+CocoaUSBDeviceRequester is a Cocoa frontend for IOUSBDeviceInterface::DeviceRequest()
+Created by Daniel Mack, 2010
+Released under the GPLv2
+
