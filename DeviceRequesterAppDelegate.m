@@ -121,14 +121,17 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 		UInt16 vendorID, productID;
 		(*dev)->GetDeviceVendor(dev, &vendorID);
 		(*dev)->GetDeviceProduct(dev, &productID);
-
+		NSString *name = CFDictionaryGetValue(entryProperties, CFSTR(kUSBProductString));
+		if (!name)
+			continue;
+		
 		printf(" *dev = %p\n", *dev);
 
 		[dict setObject: [NSString stringWithFormat: @"0x%04x", vendorID]
 			 forKey: @"VID"];
 		[dict setObject: [NSString stringWithFormat: @"0x%04x", productID]
 			 forKey: @"PID"];
-		[dict setObject: [NSString stringWithString: CFDictionaryGetValue(entryProperties, CFSTR(kUSBProductString))]
+		[dict setObject: [NSString stringWithString: name]
 			 forKey: @"name"];
 		[dict setObject: [NSValue valueWithPointer: dev]
 			 forKey: @"dev"];
