@@ -12,8 +12,8 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="551"/>
 			<integer value="29"/>
+			<integer value="372"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1343,7 +1343,7 @@
 										<object class="NSTableView" id="46818042">
 											<reference key="NSNextResponder" ref="1017792684"/>
 											<int key="NSvFlags">256</int>
-											<string key="NSFrameSize">{368, 257}</string>
+											<string key="NSFrameSize">{368, 332}</string>
 											<reference key="NSSuperview" ref="1017792684"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTableHeaderView" key="NSHeaderView" id="186116865">
@@ -1502,7 +1502,7 @@
 											<int key="NSTableViewDraggingDestinationStyle">0</int>
 										</object>
 									</object>
-									<string key="NSFrame">{{1, 17}, {368, 257}}</string>
+									<string key="NSFrame">{{1, 17}, {368, 332}}</string>
 									<reference key="NSSuperview" ref="999700243"/>
 									<reference key="NSNextKeyView" ref="46818042"/>
 									<reference key="NSDocView" ref="46818042"/>
@@ -1544,7 +1544,7 @@
 								</object>
 								<reference ref="673399649"/>
 							</object>
-							<string key="NSFrame">{{20, 95}, {370, 275}}</string>
+							<string key="NSFrame">{{20, 20}, {370, 350}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSNextKeyView" ref="1017792684"/>
 							<int key="NSsFlags">562</int>
@@ -2790,14 +2790,6 @@
 						<reference key="destination" ref="113969886"/>
 					</object>
 					<int key="connectionID">584</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">unitID</string>
-						<reference key="source" ref="976324537"/>
-						<reference key="destination" ref="5958648"/>
-					</object>
-					<int key="connectionID">585</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -4872,9 +4864,9 @@
 					<integer value="1"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<integer value="1"/>
-					<string>{{136, 125}, {700, 390}}</string>
+					<string>{{154, 105}, {700, 390}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{136, 125}, {700, 390}}</string>
+					<string>{{154, 105}, {700, 390}}</string>
 					<integer value="1"/>
 					<string>{{33, 99}, {480, 360}}</string>
 					<boolean value="YES"/>

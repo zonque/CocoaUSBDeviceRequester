@@ -91,7 +91,7 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 	CFMutableDictionaryRef	entryProperties = NULL;
 
 	while ((serviceObject = IOIteratorNext(iterator))) {
-		printf("factory: device added %d.\n", (int) serviceObject);
+		printf("%s(): device added %d.\n", __func__, (int) serviceObject);
 		IORegistryEntryCreateCFProperties(serviceObject, &entryProperties, NULL, 0);
 
 		kr = IOCreatePlugInInterfaceForService(serviceObject,
@@ -99,7 +99,7 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 						       &plugInInterface, &score);
 
 		if ((kr != kIOReturnSuccess) || !plugInInterface) {
-			printf("Unable to create a plug-in (%08x)\n", kr);
+			printf("%s(): Unable to create a plug-in (%08x)\n", __func__, kr);
 			continue;
 		}
 
@@ -112,7 +112,7 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 		(*plugInInterface)->Release(plugInInterface);
 
 		if (result || !dev) {
-			printf("Couldn’t create a device interface (%08x)\n", (int) result);
+			printf("%s(): Couldn’t create a device interface (%08x)\n", __func__, (int) result);
 			continue;
 		}
 
@@ -241,6 +241,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView *)aTableView
 {
+	printf("%s(): %d devices", __func__, (int) [deviceArray count]);
 	return [deviceArray count];
 }
 
