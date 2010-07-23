@@ -1,5 +1,5 @@
 //
-// Prefix header for all source files of the 'UAC2MemoryAccess' target in the 'UAC2MemoryAccess' project
+// Prefix header for all source files of the 'USBDeviceRequester' target in the 'USBDeviceRequester' project
 //
 
 #ifdef __OBJC__

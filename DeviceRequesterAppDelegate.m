@@ -41,7 +41,7 @@ __END_DECLS
 
 #import "DeviceRequesterAppDelegate.h"
 
-@implementation UAC2MemoryAccessAppDelegate
+@implementation USBDeviceRequesterAppDelegate
 
 @synthesize window;
 @synthesize deviceTable;
@@ -60,20 +60,20 @@ __END_DECLS
 
 #pragma mark ######### static wrappers #########
 
-static void 
+static void
 staticDeviceAdded (void *refCon, io_iterator_t iterator)
 {
-	UAC2MemoryAccessAppDelegate *del = refCon;
-	
+	USBDeviceRequesterAppDelegate *del = refCon;
+
 	if (del)
 		[del deviceAdded : iterator];
 }
 
-static void 
+static void
 staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 {
-	UAC2MemoryAccessAppDelegate *del = refCon;
-	
+	USBDeviceRequesterAppDelegate *del = refCon;
+
 	if (del)
 		[del deviceRemoved : iterator];
 }
@@ -89,41 +89,41 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 	kern_return_t		kr;
 	HRESULT			result;
 	CFMutableDictionaryRef	entryProperties = NULL;
-	
+
 	while ((serviceObject = IOIteratorNext(iterator))) {
 		printf("factory: device added %d.\n", (int) serviceObject);
 		IORegistryEntryCreateCFProperties(serviceObject, &entryProperties, NULL, 0);
-		
+
 		kr = IOCreatePlugInInterfaceForService(serviceObject,
 						       kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
 						       &plugInInterface, &score);
-		
+
 		if ((kr != kIOReturnSuccess) || !plugInInterface) {
 			printf("Unable to create a plug-in (%08x)\n", kr);
 			continue;
 		}
-		
+
 		// create the device interface
 		result = (*plugInInterface)->QueryInterface(plugInInterface,
 							    CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
 							    (LPVOID *)&dev);
-		
+
 		// don’t need the intermediate plug-in after device interface is created
 		(*plugInInterface)->Release(plugInInterface);
-		
+
 		if (result || !dev) {
 			printf("Couldn’t create a device interface (%08x)\n", (int) result);
 			continue;
 		}
-		
+
 		NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity: 0];
-		
+
 		UInt16 vendorID, productID;
 		(*dev)->GetDeviceVendor(dev, &vendorID);
 		(*dev)->GetDeviceProduct(dev, &productID);
-		
+
 		printf(" *dev = %p\n", *dev);
-		
+
 		[dict setObject: [NSString stringWithFormat: @"0x%04x", vendorID]
 			 forKey: @"VID"];
 		[dict setObject: [NSString stringWithFormat: @"0x%04x", productID]
@@ -134,36 +134,36 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 			 forKey: @"dev"];
 		[dict setObject: [NSNumber numberWithInt: serviceObject]
 			 forKey: @"service"];
-		
+
 		[deviceArray addObject: dict];
 	}
-	
+
 	[deviceTable reloadData];
 }
 
 - (void) deviceRemoved: (io_iterator_t) iterator
 {
 	io_service_t serviceObject;
-	
+
 	while ((serviceObject = IOIteratorNext(iterator))) {
 		NSEnumerator *enumerator = [deviceArray objectEnumerator];
 		printf("%s(): device removed %d.\n", __func__, (int) serviceObject);
 		NSDictionary *dict;
-		
+
 		while (dict = [enumerator nextObject]) {
 			if ((io_service_t) [[dict valueForKey: @"service"] intValue] == serviceObject) {
 				[deviceArray removeObject: dict];
 				break;
 			}
 		}
-		
+
 		IOObjectRelease(serviceObject);
 	}
-	
+
 	[deviceTable reloadData];
-	
+
 	if ([deviceTable selectedRow] < 0)
-		[self setDeviceEnabled: NO];	
+		[self setDeviceEnabled: NO];
 }
 
 #pragma mark ######### GUI related #########
@@ -174,50 +174,50 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 	CFRunLoopSourceRef runLoopSource;
 	mach_port_t masterPort;
 	kern_return_t kernResult;
-	
+
 	deviceArray = [[NSMutableArray alloc] initWithCapacity: 0];
-	
+
 	// Returns the mach port used to initiate communication with IOKit.
 	kernResult = IOMasterPort(MACH_PORT_NULL, &masterPort);
-	
+
 	if (kernResult != kIOReturnSuccess) {
 		printf("%s(): IOMasterPort() returned %08x\n", __func__, kernResult);
 		return;
 	}
-	
+
 	classToMatch = IOServiceMatching(kIOUSBDeviceClassName);
 	if (!classToMatch) {
 		printf("%s(): IOServiceMatching returned a NULL dictionary.\n", __func__);
 		return;
 	}
-	
+
 	// increase the reference count by 1 since die dict is used twice.
 	CFRetain(classToMatch);
-	
+
 	gNotifyPort = IONotificationPortCreate(masterPort);
 	runLoopSource = IONotificationPortGetRunLoopSource(gNotifyPort);
 	CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopDefaultMode);
-	
+
 	ret = IOServiceAddMatchingNotification(gNotifyPort,
 					       kIOFirstMatchNotification,
 					       classToMatch,
 					       staticDeviceAdded,
 					       self,
 					       &gNewDeviceAddedIter);
-	
+
 	// Iterate once to get already-present devices and arm the notification
 	[self deviceAdded: gNewDeviceAddedIter];
-	
+
 	ret = IOServiceAddMatchingNotification(gNotifyPort,
 					       kIOTerminatedNotification,
 					       classToMatch,
 					       staticDeviceRemoved,
 					       self,
 					       &gNewDeviceRemovedIter);
-	
+
 	// Iterate once to get already-present devices and arm the notification
 	[self deviceRemoved : gNewDeviceRemovedIter];
-	
+
 	// done with the masterport
 	mach_port_deallocate(mach_task_self(), masterPort);
 }
@@ -255,7 +255,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 	[wIndex setEditable: en];
 	[wValue setEditable: en];
 	[dataSize setEnabled: en];
-	
+
 	if (!en) {
 		[deviceVID setStringValue: @"-"];
 		[devicePID setStringValue: @"-"];
@@ -267,7 +267,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 - (IBAction) selectDevice: (id) sender
 {
 	NSInteger selectedRow = [sender selectedRow];
-	
+
 	if (selectedRow < 0) {
 		[self setDeviceEnabled: NO];
 		return;
@@ -334,7 +334,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 	int i;
 
 	[memData setStringValue: @""];
-	
+
 	IOUSBDevRequest req;
 	req.bmRequestType = USBmakebmRequestType(kUSBIn,
 						 [requestType indexOfSelectedItem],
@@ -344,14 +344,14 @@ objectValueForTableColumn:(NSTableColumn *)col
 	req.wIndex = [wIndex intValue];
 	req.pData = tmp;
 	req.wLength = count;
-	
+
 	kr = (*dev)->DeviceRequest(dev, &req);
 
 	if (kr == 0) {
 		memset(tmpstr, 0, sizeof(tmpstr));
 		for (i = 0; i < count; i++)
 			snprintf(tmpstr + (i * 5), 5, "0x%02x ", tmp[i]);
-		
+
 		[memData setStringValue: [NSString stringWithCString: tmpstr
 							    encoding: NSASCIIStringEncoding]];
 	} else {
@@ -370,18 +370,18 @@ objectValueForTableColumn:(NSTableColumn *)col
 	NSDictionary *dict = [deviceArray objectAtIndex: selectedRow];
 	IOUSBDeviceInterface **dev = [[dict valueForKey: @"dev"] pointerValue];
 	HRESULT kr;
-	
+
 	unsigned char tmp[1024];
 	UInt count = [self convertData: tmp
 			     maxLength: sizeof(tmp)];
 	[dataSize setIntValue: count];
-	
+
 	/*
 	int i;
 	for (i = 0; i < count; i++)
 		printf("tmp[%d] = %02x\n", i, tmp[i]);
 	*/
-	
+
 	IOUSBDevRequest req;
 	req.bmRequestType = USBmakebmRequestType(kUSBOut,
 						 [requestType indexOfSelectedItem],
@@ -389,9 +389,9 @@ objectValueForTableColumn:(NSTableColumn *)col
 	req.bRequest = [bRequest intValue];
 	req.wValue = [wValue intValue];
 	req.wIndex = [wIndex intValue];
-	
+
 	kr = (*dev)->DeviceRequest(dev, &req);
-	
+
 	if (kr != 0)
 		NSBeginCriticalAlertSheet (@"Set request failed",
 					   @"Oh, well.",

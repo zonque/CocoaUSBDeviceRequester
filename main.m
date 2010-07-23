@@ -1,6 +1,6 @@
 //
 //  main.m
-//  UAC2MemoryAccess
+//  USBDeviceRequester
 //
 //  Created by Daniel on 01.07.10.
 //  Copyright 2010 caiaq. All rights reserved.

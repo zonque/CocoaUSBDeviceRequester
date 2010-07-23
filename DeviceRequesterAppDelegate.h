@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-@interface UAC2MemoryAccessAppDelegate : NSObject <NSApplicationDelegate> {
+@interface USBDeviceRequesterAppDelegate : NSObject <NSApplicationDelegate> {
 	NSWindow	*window;
 	NSTableView	*deviceTable;
 	NSTextField	*deviceVID;
@@ -15,12 +15,12 @@
 	NSBox		*requestBox;
 	NSButton	*setButton;
 	NSButton	*getButton;
-	
+
 	NSMutableArray			*deviceArray;
 	io_iterator_t			gNewDeviceAddedIter;
 	io_iterator_t			gNewDeviceRemovedIter;
 	IONotificationPortRef		gNotifyPort;
-	CFMutableDictionaryRef		classToMatch;	
+	CFMutableDictionaryRef		classToMatch;
 }
 
 @property (assign) IBOutlet NSWindow	*window;
