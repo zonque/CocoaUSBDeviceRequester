@@ -250,16 +250,16 @@ objectValueForTableColumn:(NSTableColumn *)col
 
 - (void) setDeviceEnabled: (BOOL) en
 {
+	[requestType setEnabled: en];
+	[requestRecipient setEnabled: en];
+	[bRequest setEnabled: en];
+	[wIndex setEnabled: en];
+	[wValue setEnabled: en];
+	[dataSize setEnabled: en];
 	[setButton setEnabled: en];
 	[getButton setEnabled: en];
 	[memData setEditable: en];
-	[requestType setEnabled: en];
-	[requestRecipient setEnabled: en];
-	[bRequest setEditable: en];
-	[wIndex setEditable: en];
-	[wValue setEditable: en];
-	[dataSize setEnabled: en];
-
+	
 	if (!en) {
 		[deviceVID setStringValue: @"-"];
 		[devicePID setStringValue: @"-"];
@@ -326,46 +326,81 @@ objectValueForTableColumn:(NSTableColumn *)col
 	[self setDeviceEnabled: NO];
 }
 
+- (NSInteger) convertToInt: (NSString *) string
+{
+	char tmp[64];
+	
+	[string getCString: tmp
+		 maxLength: sizeof(tmp)
+		  encoding: NSASCIIStringEncoding];
+	if (tmp[0] == '0' && tmp[1] == 'x')
+		return strtol(tmp, NULL, 16);
+	
+	return strtol(tmp, NULL, 10);
+}
+
+- (HRESULT) makeRequestToDevice: (IOUSBDeviceInterface **) dev
+	  directionHostToDevice: (BOOL) directionHostToDevice
+{
+	HRESULT kr;
+	IOUSBDevRequest req;
+	UInt count;
+	unsigned char tmp[1024];
+	
+	if (directionHostToDevice) {
+		count = [self convertData: tmp
+				maxLength: sizeof(tmp)];
+		[dataSize setIntValue: count];
+	} else {
+		count = [dataSize intValue];
+		[memData setStringValue: @""];
+	}
+
+	req.bmRequestType = USBmakebmRequestType(directionHostToDevice ? kUSBOut: kUSBIn,
+						 [requestType indexOfSelectedItem],
+						 [requestRecipient indexOfSelectedItem]);
+	req.bRequest = [self convertToInt: [bRequest stringValue]];
+	req.wValue = [self convertToInt: [wValue stringValue]];
+	req.wIndex = [self convertToInt: [wIndex stringValue]];
+	req.pData = tmp;
+	req.wLength = count;
+	printf("wIndex %04x\n", req.wIndex);
+	kr = (*dev)->DeviceRequest(dev, &req);
+
+	if (kr) {
+		NSBeginCriticalAlertSheet(@"Request failed",
+					  @"Oh, well.",
+					  nil, nil,
+					  [NSApp mainWindow],
+					  nil, nil, nil, NULL,
+					  @"OS reported error code %08x", kr);
+		return kr;
+	}
+
+	if (!directionHostToDevice) {
+		char tmpstr[5 * 1024];
+		NSInteger i;
+
+		memset(tmpstr, 0, sizeof(tmpstr));
+		for (i = 0; i < count; i++)
+			snprintf(tmpstr + (i * 5), 5, "0x%02x ", tmp[i]);
+		
+		[memData setStringValue: [NSString stringWithCString: tmpstr
+							    encoding: NSASCIIStringEncoding]];
+		
+	}
+	
+	return 0;
+}
+
 - (IBAction) getData: (id) sender
 {
 	NSInteger selectedRow = [deviceTable selectedRow];
 	NSDictionary *dict = [deviceArray objectAtIndex: selectedRow];
 	IOUSBDeviceInterface **dev = [[dict valueForKey: @"dev"] pointerValue];
-	UInt count = [dataSize intValue];
-	HRESULT kr;
-	unsigned char tmp[1024];
-	char tmpstr[5 * 1024];
-	int i;
-
-	[memData setStringValue: @""];
-
-	IOUSBDevRequest req;
-	req.bmRequestType = USBmakebmRequestType(kUSBIn,
-						 [requestType indexOfSelectedItem],
-						 [requestRecipient indexOfSelectedItem]);
-	req.bRequest = [bRequest intValue];
-	req.wValue = [wValue intValue];
-	req.wIndex = [wIndex intValue];
-	req.pData = tmp;
-	req.wLength = count;
-
-	kr = (*dev)->DeviceRequest(dev, &req);
-
-	if (kr == 0) {
-		memset(tmpstr, 0, sizeof(tmpstr));
-		for (i = 0; i < count; i++)
-			snprintf(tmpstr + (i * 5), 5, "0x%02x ", tmp[i]);
-
-		[memData setStringValue: [NSString stringWithCString: tmpstr
-							    encoding: NSASCIIStringEncoding]];
-	} else {
-		NSBeginCriticalAlertSheet (@"Get request failed",
-					   @"Oh, well.",
-					   nil, nil,
-					   [NSApp mainWindow],
-					   nil, nil, nil, NULL,
-					   @"OS reported error code %08x", kr);
-	}
+	
+	[self makeRequestToDevice: dev
+		 directionHostToDevice: NO];
 }
 
 - (IBAction) setData: (id) sender
@@ -373,36 +408,9 @@ objectValueForTableColumn:(NSTableColumn *)col
 	NSInteger selectedRow = [deviceTable selectedRow];
 	NSDictionary *dict = [deviceArray objectAtIndex: selectedRow];
 	IOUSBDeviceInterface **dev = [[dict valueForKey: @"dev"] pointerValue];
-	HRESULT kr;
-
-	unsigned char tmp[1024];
-	UInt count = [self convertData: tmp
-			     maxLength: sizeof(tmp)];
-	[dataSize setIntValue: count];
-
-	/*
-	int i;
-	for (i = 0; i < count; i++)
-		printf("tmp[%d] = %02x\n", i, tmp[i]);
-	*/
-
-	IOUSBDevRequest req;
-	req.bmRequestType = USBmakebmRequestType(kUSBOut,
-						 [requestType indexOfSelectedItem],
-						 [requestRecipient indexOfSelectedItem]);
-	req.bRequest = [bRequest intValue];
-	req.wValue = [wValue intValue];
-	req.wIndex = [wIndex intValue];
-
-	kr = (*dev)->DeviceRequest(dev, &req);
-
-	if (kr != 0)
-		NSBeginCriticalAlertSheet (@"Set request failed",
-					   @"Oh, well.",
-					   nil, nil,
-					   [NSApp mainWindow],
-					   nil, nil, nil, NULL,
-					   @"OS reported error code %08x", kr);
+	
+	[self makeRequestToDevice: dev
+	    directionHostToDevice: YES];
 }
 
 @end

@@ -1516,7 +1516,7 @@
 									<reference key="NSSuperview" ref="999700243"/>
 									<reference key="NSTarget" ref="999700243"/>
 									<string key="NSAction">_doScroller:</string>
-									<double key="NSPercent">0.99022801302931596</double>
+									<double key="NSPercent">0.98841698841698844</double>
 								</object>
 								<object class="NSScroller" id="270921611">
 									<reference key="NSNextResponder" ref="999700243"/>
@@ -1690,7 +1690,7 @@
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTextFieldCell" key="NSCell" id="915308017">
 												<int key="NSCellFlags">-1804468671</int>
-												<int key="NSCellFlags2">272761856</int>
+												<int key="NSCellFlags2">-1874721792</int>
 												<string key="NSContents">0</string>
 												<reference key="NSSupport" ref="26"/>
 												<reference key="NSControlView" ref="5958648"/>
@@ -1872,7 +1872,7 @@
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTextFieldCell" key="NSCell" id="1020443038">
 												<int key="NSCellFlags">-1804468671</int>
-												<int key="NSCellFlags2">272761856</int>
+												<int key="NSCellFlags2">-1874721792</int>
 												<string key="NSContents">0</string>
 												<reference key="NSSupport" ref="26"/>
 												<reference key="NSControlView" ref="556952285"/>
@@ -4133,6 +4133,9 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">561</int>
 						<reference key="object" ref="915308017"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+						</object>
 						<reference key="parent" ref="5958648"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -4272,6 +4275,9 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">610</int>
 						<reference key="object" ref="1020443038"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+						</object>
 						<reference key="parent" ref="556952285"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -5068,7 +5074,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">635</int>
+			<int key="maxID">637</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
