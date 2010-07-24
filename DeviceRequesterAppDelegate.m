@@ -330,8 +330,8 @@ objectValueForTableColumn:(NSTableColumn *)col
 	return strtol(tmp, NULL, 10);
 }
 
-- (HRESULT) makeRequestToDevice: (IOUSBDeviceInterface **) dev
-	  directionHostToDevice: (BOOL) directionHostToDevice
+- (void) makeRequestToDevice: (IOUSBDeviceInterface **) dev
+       directionHostToDevice: (BOOL) directionHostToDevice
 {
 	HRESULT kr;
 	IOUSBDevRequest req;
@@ -365,7 +365,6 @@ objectValueForTableColumn:(NSTableColumn *)col
 					  [NSApp mainWindow],
 					  nil, nil, nil, NULL,
 					  @"OS reported error code %08x", kr);
-		return kr;
 	}
 
 	if (!directionHostToDevice) {
@@ -378,10 +377,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 		
 		[memData setStringValue: [NSString stringWithCString: tmpstr
 							    encoding: NSASCIIStringEncoding]];
-		
 	}
-	
-	return 0;
 }
 
 - (IBAction) getData: (id) sender
