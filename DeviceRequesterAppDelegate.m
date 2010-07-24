@@ -244,7 +244,6 @@ objectValueForTableColumn:(NSTableColumn *)col
 
 - (NSInteger) numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	printf("%s(): %d devices", __func__, (int) [deviceArray count]);
 	return [deviceArray count];
 }
 
@@ -287,16 +286,17 @@ objectValueForTableColumn:(NSTableColumn *)col
 
 #pragma mark ############ NSApplication delegate protocol #############
 
-- (BOOL) application: (NSApplication *) theApplication openFile:(NSString *)filename
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	return NO;
+	[memData setFont: [NSFont fontWithName: @"Courier New" size: 11]];
+	[self listenForDevices];
+	[self setDeviceEnabled: NO];
 }
 
 - (UInt) convertData: (unsigned char *) dest maxLength: (UInt) len
 {
-	char tmp[1024];
-	int n = 0;
-	char *next;
+	char tmp[1024], *next;
+	NSInteger n = 0;
 
 	[[memData stringValue] getCString: tmp
 				maxLength: sizeof(tmp)
@@ -310,13 +310,6 @@ objectValueForTableColumn:(NSTableColumn *)col
 	return n;
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-	[memData setFont: [NSFont fontWithName: @"Courier New" size: 11]];
-	[self listenForDevices];
-	[self setDeviceEnabled: NO];
-}
-
 - (NSInteger) convertToInt: (NSString *) string
 {
 	char tmp[64];
@@ -324,6 +317,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 	[string getCString: tmp
 		 maxLength: sizeof(tmp)
 		  encoding: NSASCIIStringEncoding];
+
 	if (tmp[0] == '0' && tmp[1] == 'x')
 		return strtol(tmp, NULL, 16);
 	
@@ -358,17 +352,16 @@ objectValueForTableColumn:(NSTableColumn *)col
 
 	kr = (*dev)->DeviceRequest(dev, &req);
 
-	if (kr) {
+	if (kr)
 		NSBeginCriticalAlertSheet(@"Request failed",
 					  @"Oh, well.",
 					  nil, nil,
 					  [NSApp mainWindow],
 					  nil, nil, nil, NULL,
 					  @"OS reported error code %08x", kr);
-	}
 
 	if (!directionHostToDevice) {
-		char tmpstr[5 * 1024];
+		char tmpstr[(5 * count) + 1];
 		NSInteger i;
 
 		memset(tmpstr, 0, sizeof(tmpstr));
