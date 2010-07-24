@@ -310,15 +310,6 @@ objectValueForTableColumn:(NSTableColumn *)col
 	return n;
 }
 
-- (IBAction) dataChanged: (id) sender
-{
-	unsigned char tmp[1024];
-	UInt count = [self convertData: tmp
-			     maxLength: sizeof(tmp)];
-	[dataSize setIntValue: count];
-	printf("count %d\n", count);
-}
-
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[memData setFont: [NSFont fontWithName: @"Courier New" size: 11]];
@@ -364,7 +355,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 	req.wIndex = [self convertToInt: [wIndex stringValue]];
 	req.pData = tmp;
 	req.wLength = count;
-	printf("wIndex %04x\n", req.wIndex);
+
 	kr = (*dev)->DeviceRequest(dev, &req);
 
 	if (kr) {

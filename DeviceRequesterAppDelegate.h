@@ -46,6 +46,5 @@
 - (IBAction) selectDevice: (id) sender;
 - (IBAction) setData: (id) sender;
 - (IBAction) getData: (id) sender;
-- (IBAction) dataChanged: (id) sender;
 
 @end
