@@ -380,24 +380,24 @@ objectValueForTableColumn:(NSTableColumn *)col
 	}
 }
 
-- (IBAction) getData: (id) sender
+- (void) makeRequestToSelectedDevice: (BOOL) outputDirection
 {
 	NSInteger selectedRow = [deviceTable selectedRow];
 	NSDictionary *dict = [deviceArray objectAtIndex: selectedRow];
 	IOUSBDeviceInterface **dev = [[dict valueForKey: @"dev"] pointerValue];
 	
 	[self makeRequestToDevice: dev
-		 directionHostToDevice: NO];
+	    directionHostToDevice: outputDirection];	
+}
+
+- (IBAction) getData: (id) sender
+{
+	[self makeRequestToSelectedDevice: NO];
 }
 
 - (IBAction) setData: (id) sender
 {
-	NSInteger selectedRow = [deviceTable selectedRow];
-	NSDictionary *dict = [deviceArray objectAtIndex: selectedRow];
-	IOUSBDeviceInterface **dev = [[dict valueForKey: @"dev"] pointerValue];
-	
-	[self makeRequestToDevice: dev
-	    directionHostToDevice: YES];
+	[self makeRequestToSelectedDevice: YES];
 }
 
 @end
