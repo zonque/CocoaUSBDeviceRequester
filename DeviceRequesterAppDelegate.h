@@ -15,6 +15,7 @@
 	NSBox		*requestBox;
 	NSButton	*setButton;
 	NSButton	*getButton;
+	NSButton	*resetButton;
 
 	NSMutableArray			*deviceArray;
 	io_iterator_t			gNewDeviceAddedIter;
@@ -35,6 +36,7 @@
 @property (assign) IBOutlet NSBox	*requestBox;
 @property (assign) IBOutlet NSButton	*setButton;
 @property (assign) IBOutlet NSButton	*getButton;
+@property (assign) IBOutlet NSButton	*resetButton;
 @property (assign) IBOutlet NSPopUpButton *requestType;
 @property (assign) IBOutlet NSPopUpButton *requestRecipient;
 
@@ -46,5 +48,6 @@
 - (IBAction) selectDevice: (id) sender;
 - (IBAction) setData: (id) sender;
 - (IBAction) getData: (id) sender;
+- (IBAction) resetDevice: (id) sender;
 
 @end

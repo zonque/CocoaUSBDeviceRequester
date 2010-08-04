@@ -56,6 +56,7 @@ __END_DECLS
 @synthesize requestBox;
 @synthesize setButton;
 @synthesize getButton;
+@synthesize resetButton;
 @synthesize dataSize;
 
 #pragma mark ######### static wrappers #########
@@ -257,6 +258,7 @@ objectValueForTableColumn:(NSTableColumn *)col
 	[dataSize setEnabled: en];
 	[setButton setEnabled: en];
 	[getButton setEnabled: en];
+	[resetButton setEnabled: en];
 	[memData setEditable: en];
 	
 	if (!en) {
@@ -391,6 +393,41 @@ objectValueForTableColumn:(NSTableColumn *)col
 - (IBAction) setData: (id) sender
 {
 	[self makeRequestToSelectedDevice: YES];
+}
+
+- (IBAction) resetDevice: (id) sender
+{
+	NSInteger selectedRow = [deviceTable selectedRow];
+	NSDictionary *dict = [deviceArray objectAtIndex: selectedRow];
+	IOUSBDeviceInterface187 **dev = [[dict valueForKey: @"dev"] pointerValue];
+	OSStatus kr;
+
+	kr = (*dev)->USBDeviceOpen(dev);
+	if (kr)
+		NSBeginCriticalAlertSheet(@"Exclusive Device open failed",
+					  @"Oh, well.",
+					  nil, nil,
+					  [NSApp mainWindow],
+					  nil, nil, nil, NULL,
+					  @"OS reported error code %08x", kr);
+	
+	kr = (*dev)->ResetDevice(dev);
+	if (kr)
+		NSBeginCriticalAlertSheet(@"Device reset failed",
+					  @"Oh, well.",
+					  nil, nil,
+					  [NSApp mainWindow],
+					  nil, nil, nil, NULL,
+					  @"OS reported error code %08x", kr);
+
+	kr = (*dev)->USBDeviceReEnumerate(dev, 0);
+	if (kr)
+		NSBeginCriticalAlertSheet(@"USBDeviceReEnumerate failed",
+					  @"Oh, well.",
+					  nil, nil,
+					  [NSApp mainWindow],
+					  nil, nil, nil, NULL,
+					  @"OS reported error code %08x", kr);
 }
 
 @end
