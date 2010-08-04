@@ -345,10 +345,10 @@ objectValueForTableColumn:(NSTableColumn *)col
 						 [requestType indexOfSelectedItem],
 						 [requestRecipient indexOfSelectedItem]);
 	req.bRequest = [self convertToInt: [bRequest stringValue]];
-	req.wValue = [self convertToInt: [wValue stringValue]];
-	req.wIndex = [self convertToInt: [wIndex stringValue]];
+	req.wValue = EndianS16_NtoL([self convertToInt: [wValue stringValue]]);
+	req.wIndex = EndianS16_NtoL([self convertToInt: [wIndex stringValue]]);
+	req.wLength = EndianS16_NtoL(count);
 	req.pData = tmp;
-	req.wLength = count;
 
 	kr = (*dev)->DeviceRequest(dev, &req);
 
