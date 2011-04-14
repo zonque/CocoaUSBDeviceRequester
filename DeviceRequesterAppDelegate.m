@@ -364,11 +364,15 @@ objectValueForTableColumn:(NSTableColumn *)col
 
 	if (!directionHostToDevice) {
 		char tmpstr[(5 * count) + 1];
+		char subtmp[6];
 		NSInteger i;
 
 		memset(tmpstr, 0, sizeof(tmpstr));
-		for (i = 0; i < count; i++)
-			snprintf(tmpstr + (i * 5), 5, "0x%02x ", tmp[i]);
+		memset(subtmp, 0, sizeof(subtmp));
+		for (i = 0; i < count; i++) {
+			snprintf(subtmp, 6, "0x%02x ", tmp[i]);
+			strncat(tmpstr, subtmp, 6);
+		}
 		
 		[memData setStringValue: [NSString stringWithCString: tmpstr
 							    encoding: NSASCIIStringEncoding]];
