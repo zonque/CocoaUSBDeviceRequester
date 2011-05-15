@@ -122,7 +122,7 @@ staticDeviceRemoved (void *refCon, io_iterator_t iterator)
 		UInt16 vendorID, productID;
 		(*dev)->GetDeviceVendor(dev, &vendorID);
 		(*dev)->GetDeviceProduct(dev, &productID);
-		NSString *name = CFDictionaryGetValue(entryProperties, CFSTR(kUSBProductString));
+		NSString *name = (NSString *) CFDictionaryGetValue(entryProperties, CFSTR(kUSBProductString));
 		if (!name)
 			continue;
 		
