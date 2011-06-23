@@ -23,7 +23,6 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IODataQueueShared.h>
 #include <IOKit/IODataQueueClient.h>
-#include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/usb/IOUSBLib.h>
 
